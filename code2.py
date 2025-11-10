@@ -348,13 +348,15 @@ if st.button("🎯 Calcular Pena Definitiva", type="primary"):
     # Verificar reincidência
     reincidente = "Reincidência" in agravantes
     
-    # Determinar regime conforme Art. 33 CP
+    # CORREÇÃO: Determinar regime conforme Art. 33 CP - LÓGICA CORRIGIDA
     if tipo_pena == "RECLUSÃO":
+        # CORREÇÃO: Pena SUPERIOR a 8 anos = FECHADO
         if pena_final > 8:
             regime = "FECHADO"
             cor_regime = "#ff4444"
             descricao = "Presídio de segurança máxima/média"
             fundamento = "Art. 33, §2º, 'a' - Pena superior a 8 anos"
+        # CORREÇÃO: Pena MAIOR OU IGUAL a 4 anos ATÉ 8 anos
         elif pena_final >= 4:
             if not reincidente:
                 regime = "SEMIABERTO"
@@ -366,6 +368,7 @@ if st.button("🎯 Calcular Pena Definitiva", type="primary"):
                 cor_regime = "#ff4444"
                 descricao = "Presídio de segurança máxima/média"
                 fundamento = "Art. 33, §2º - Reincidente, pena 4-8 anos"
+        # CORREÇÃO: Pena INFERIOR a 4 anos
         else:
             if not reincidente:
                 regime = "ABERTO"
@@ -379,16 +382,17 @@ if st.button("🎯 Calcular Pena Definitiva", type="primary"):
                 fundamento = "Art. 33, §2º - Reincidente, pena até 4 anos"
     
     else:  # DETENÇÃO
-        if pena_final >= 4:
+        # CORREÇÃO: Para detenção, regime depende apenas da pena
+        if pena_final > 4:
             regime = "SEMIABERTO"
             cor_regime = "#ffaa00"
             descricao = "Colônia agrícola, industrial ou similar"
-            fundamento = "Art. 33 - Detenção: regime semiaberto ou aberto"
+            fundamento = "Art. 33 - Detenção: pena superior a 4 anos = semiaberto"
         else:
             regime = "ABERTO"
             cor_regime = "#44cc44"
             descricao = "Casa de albergado, trabalho externo"
-            fundamento = "Art. 33 - Detenção: regime semiaberto ou aberto"
+            fundamento = "Art. 33 - Detenção: pena até 4 anos = aberto"
     
     st.markdown(f"""
     <div style="background-color: {cor_regime}20; padding: 20px; border-radius: 10px; border-left: 5px solid {cor_regime};">
