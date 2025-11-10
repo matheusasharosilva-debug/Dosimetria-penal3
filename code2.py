@@ -573,4 +573,3 @@ st.write("**⚖️ Ferramenta educacional - Consulte sempre a legislação atual
 st.write("**📚 Base legal:** Arts. 33, 43-48, 59, 61, 65, 68 do Código Penal Brasileiro")
 st.write("**⚡ Correção aplicada:** Respeito ao mínimo legal conforme Súmula 231 STJ")
     # Resumo final estilizado
-    st.mark
