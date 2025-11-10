@@ -348,28 +348,29 @@ if st.button("🎯 Calcular Pena Definitiva", type="primary"):
     # Verificar reincidência
     reincidente = "Reincidência" in agravantes
     
-    # CORREÇÃO: Determinar regime conforme Art. 33 CP - LÓGICA CORRIGIDA
+    # CORREÇÃO COMPLETA: Determinar regime conforme Art. 33 CP
     if tipo_pena == "RECLUSÃO":
-        # CORREÇÃO: Pena SUPERIOR a 8 anos = FECHADO
+        # LÓGICA CORRIGIDA - VERIFICAÇÃO POR ORDEM DECRESCENTE
         if pena_final > 8:
+            # Pena SUPERIOR a 8 anos = SEMPRE FECHADO
             regime = "FECHADO"
             cor_regime = "#ff4444"
             descricao = "Presídio de segurança máxima/média"
             fundamento = "Art. 33, §2º, 'a' - Pena superior a 8 anos"
-        # CORREÇÃO: Pena MAIOR OU IGUAL a 4 anos ATÉ 8 anos
-        elif pena_final >= 4:
+        elif pena_final > 4:
+            # Pena MAIOR que 4 anos ATÉ 8 anos
             if not reincidente:
                 regime = "SEMIABERTO"
                 cor_regime = "#ffaa00"
                 descricao = "Colônia agrícola, industrial ou similar"
-                fundamento = "Art. 33, §2º, 'b' - Não reincidente, pena 4-8 anos"
+                fundamento = "Art. 33, §2º, 'b' - Não reincidente, pena superior a 4 até 8 anos"
             else:
                 regime = "FECHADO"
                 cor_regime = "#ff4444"
                 descricao = "Presídio de segurança máxima/média"
-                fundamento = "Art. 33, §2º - Reincidente, pena 4-8 anos"
-        # CORREÇÃO: Pena INFERIOR a 4 anos
+                fundamento = "Art. 33, §2º - Reincidente, pena superior a 4 até 8 anos"
         else:
+            # Pena ATÉ 4 anos (incluindo 4 anos exatos)
             if not reincidente:
                 regime = "ABERTO"
                 cor_regime = "#44cc44"
@@ -382,7 +383,7 @@ if st.button("🎯 Calcular Pena Definitiva", type="primary"):
                 fundamento = "Art. 33, §2º - Reincidente, pena até 4 anos"
     
     else:  # DETENÇÃO
-        # CORREÇÃO: Para detenção, regime depende apenas da pena
+        # CORREÇÃO: Para detenção, verificação mais precisa
         if pena_final > 4:
             regime = "SEMIABERTO"
             cor_regime = "#ffaa00"
