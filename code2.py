@@ -342,69 +342,82 @@ if st.button("🎯 Calcular Pena Definitiva", type="primary"):
     </div>
     """, unsafe_allow_html=True)
 
-    # Fase 6: Regime de Cumprimento
+    # Fase 6: Regime de Cumprimento - CORREÇÃO COMPLETA
     st.header("6️⃣ Fase 6: Regime de Cumprimento")
     
     # Verificar reincidência
     reincidente = "Reincidência" in agravantes
     
-    st.write(f"**Pena final calculada:** {pena_final:.1f} anos")
-    st.write(f"**Réu reincidente:** {'Sim' if reincidente else 'Não'}")
-    st.write(f"**Tipo de pena:** {tipo_pena}")
+    # DEBUG: Mostrar valores importantes
+    st.write(f"**🔍 VALORES PARA CÁLCULO DO REGIME:**")
+    st.write(f"- Pena final: {pena_final:.2f} anos")
+    st.write(f"- Réu reincidente: {'SIM' if reincidente else 'NÃO'}")
+    st.write(f"- Tipo de pena: {tipo_pena}")
     
-    # CORREÇÃO DEFINITIVA: Determinar regime conforme Art. 33 CP
+    # LÓGICA CORRIGIDA - VERIFICAÇÃO POR ORDEM DE PRIORIDADE
+    regime = ""
+    cor_regime = ""
+    descricao = ""
+    fundamento = ""
+    
     if tipo_pena == "RECLUSÃO":
-        # LÓGICA CORRETA PARA RECLUSÃO
+        # VERIFICAÇÃO EM ORDEM DECRESCENTE DE PENA
         if pena_final > 8:
             regime = "FECHADO"
             cor_regime = "#ff4444"
             descricao = "Presídio de segurança máxima/média"
             fundamento = "Art. 33, §2º, 'a' - Pena superior a 8 anos"
-        elif 4 < pena_final <= 8:  # CORREÇÃO: maior que 4 E menor ou igual a 8
+            st.write("✅ **Condição:** pena_final > 8 → REGIME FECHADO")
+            
+        elif pena_final > 4:  # Maior que 4 e menor ou igual a 8
             if not reincidente:
                 regime = "SEMIABERTO"
                 cor_regime = "#ffaa00"
                 descricao = "Colônia agrícola, industrial ou similar"
                 fundamento = "Art. 33, §2º, 'b' - Não reincidente, pena superior a 4 até 8 anos"
+                st.write("✅ **Condição:** 4 < pena_final ≤ 8 + não reincidente → SEMIABERTO")
             else:
                 regime = "FECHADO"
                 cor_regime = "#ff4444"
                 descricao = "Presídio de segurança máxima/média"
                 fundamento = "Art. 33, §2º - Reincidente, pena superior a 4 até 8 anos"
+                st.write("✅ **Condição:** 4 < pena_final ≤ 8 + reincidente → FECHADO")
+                
         else:  # pena_final <= 4
             if not reincidente:
                 regime = "ABERTO"
                 cor_regime = "#44cc44"
                 descricao = "Casa de albergado, trabalho externo"
                 fundamento = "Art. 33, §2º, 'c' - Não reincidente, pena até 4 anos"
+                st.write("✅ **Condição:** pena_final ≤ 4 + não reincidente → ABERTO")
             else:
                 regime = "SEMIABERTO"
                 cor_regime = "#ffaa00"
                 descricao = "Colônia agrícola, industrial ou similar"
                 fundamento = "Art. 33, §2º - Reincidente, pena até 4 anos"
+                st.write("✅ **Condição:** pena_final ≤ 4 + reincidente → SEMIABERTO")
     
     else:  # DETENÇÃO
-        # LÓGICA CORRETA PARA DETENÇÃO
         if pena_final > 4:
             regime = "SEMIABERTO"
             cor_regime = "#ffaa00"
             descricao = "Colônia agrícola, industrial ou similar"
             fundamento = "Art. 33 - Detenção: pena superior a 4 anos = semiaberto"
+            st.write("✅ **Condição:** pena_final > 4 (detenção) → SEMIABERTO")
         else:
             regime = "ABERTO"
             cor_regime = "#44cc44"
             descricao = "Casa de albergado, trabalho externo"
             fundamento = "Art. 33 - Detenção: pena até 4 anos = aberto"
+            st.write("✅ **Condição:** pena_final ≤ 4 (detenção) → ABERTO")
     
-    # DEBUG: Mostrar qual condição foi atendida
-    st.write(f"**DEBUG - Condição atendida:**")
-    if tipo_pena == "RECLUSÃO":
-        if pena_final > 8:
-            st.write("✅ Pena > 8 anos → FECHADO")
-        elif 4 < pena_final <= 8:
-            st.write(f"✅ Pena entre 4 e 8 anos → {'SEMIABERTO' if not reincidente else 'FECHADO'}")
-        else:
-            st.write(f"✅ Pena ≤ 4 anos → {'ABERTO' if not reincidente else 'SEMIABERTO'}")
+    # Verificar se o regime foi determinado
+    if not regime:
+        regime = "INDETERMINADO"
+        cor_regime = "#666666"
+        descricao = "Não foi possível determinar o regime"
+        fundamento = "Erro no cálculo"
+        st.error("❌ **ERRO:** Não foi possível determinar o regime!")
     
     st.markdown(f"""
     <div style="background-color: {cor_regime}20; padding: 20px; border-radius: 10px; border-left: 5px solid {cor_regime};">
@@ -413,6 +426,7 @@ if st.button("🎯 Calcular Pena Definitiva", type="primary"):
         <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;"><em>{fundamento}</em></p>
     </div>
     """, unsafe_allow_html=True)
+
     # Fase 7: Substituição da Pena
     st.header("7️⃣ Fase 7: Substituição por Pena Restritiva de Direitos")
     
