@@ -348,17 +348,19 @@ if st.button("🎯 Calcular Pena Definitiva", type="primary"):
     # Verificar reincidência
     reincidente = "Reincidência" in agravantes
     
-    # CORREÇÃO COMPLETA: Determinar regime conforme Art. 33 CP
+    st.write(f"**Pena final calculada:** {pena_final:.1f} anos")
+    st.write(f"**Réu reincidente:** {'Sim' if reincidente else 'Não'}")
+    st.write(f"**Tipo de pena:** {tipo_pena}")
+    
+    # CORREÇÃO DEFINITIVA: Determinar regime conforme Art. 33 CP
     if tipo_pena == "RECLUSÃO":
-        # LÓGICA CORRIGIDA - VERIFICAÇÃO POR ORDEM DECRESCENTE
+        # LÓGICA CORRETA PARA RECLUSÃO
         if pena_final > 8:
-            # Pena SUPERIOR a 8 anos = SEMPRE FECHADO
             regime = "FECHADO"
             cor_regime = "#ff4444"
             descricao = "Presídio de segurança máxima/média"
             fundamento = "Art. 33, §2º, 'a' - Pena superior a 8 anos"
-        elif pena_final > 4:
-            # Pena MAIOR que 4 anos ATÉ 8 anos
+        elif 4 < pena_final <= 8:  # CORREÇÃO: maior que 4 E menor ou igual a 8
             if not reincidente:
                 regime = "SEMIABERTO"
                 cor_regime = "#ffaa00"
@@ -369,8 +371,7 @@ if st.button("🎯 Calcular Pena Definitiva", type="primary"):
                 cor_regime = "#ff4444"
                 descricao = "Presídio de segurança máxima/média"
                 fundamento = "Art. 33, §2º - Reincidente, pena superior a 4 até 8 anos"
-        else:
-            # Pena ATÉ 4 anos (incluindo 4 anos exatos)
+        else:  # pena_final <= 4
             if not reincidente:
                 regime = "ABERTO"
                 cor_regime = "#44cc44"
@@ -383,7 +384,7 @@ if st.button("🎯 Calcular Pena Definitiva", type="primary"):
                 fundamento = "Art. 33, §2º - Reincidente, pena até 4 anos"
     
     else:  # DETENÇÃO
-        # CORREÇÃO: Para detenção, verificação mais precisa
+        # LÓGICA CORRETA PARA DETENÇÃO
         if pena_final > 4:
             regime = "SEMIABERTO"
             cor_regime = "#ffaa00"
@@ -395,6 +396,16 @@ if st.button("🎯 Calcular Pena Definitiva", type="primary"):
             descricao = "Casa de albergado, trabalho externo"
             fundamento = "Art. 33 - Detenção: pena até 4 anos = aberto"
     
+    # DEBUG: Mostrar qual condição foi atendida
+    st.write(f"**DEBUG - Condição atendida:**")
+    if tipo_pena == "RECLUSÃO":
+        if pena_final > 8:
+            st.write("✅ Pena > 8 anos → FECHADO")
+        elif 4 < pena_final <= 8:
+            st.write(f"✅ Pena entre 4 e 8 anos → {'SEMIABERTO' if not reincidente else 'FECHADO'}")
+        else:
+            st.write(f"✅ Pena ≤ 4 anos → {'ABERTO' if not reincidente else 'SEMIABERTO'}")
+    
     st.markdown(f"""
     <div style="background-color: {cor_regime}20; padding: 20px; border-radius: 10px; border-left: 5px solid {cor_regime};">
         <h2 style="color: {cor_regime}; margin: 0;">🔒 REGIME {regime}</h2>
@@ -402,7 +413,6 @@ if st.button("🎯 Calcular Pena Definitiva", type="primary"):
         <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;"><em>{fundamento}</em></p>
     </div>
     """, unsafe_allow_html=True)
-
     # Fase 7: Substituição da Pena
     st.header("7️⃣ Fase 7: Substituição por Pena Restritiva de Direitos")
     
